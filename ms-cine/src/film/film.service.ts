@@ -34,8 +34,13 @@ export class FilmService {
   }
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} film`;
+  async findOne(id: number) {
+    const film = await this.filmRepository.findOne({ where: { id }, relations: ['genres'] });
+    
+    if (!film) 
+      throw new NotFoundException(`Film ID ${id} not found`);
+    
+    return film;
   }
 
 
@@ -57,10 +62,16 @@ export class FilmService {
   }
 
 
-  remove(id: number) {
-    return `This action removes a #${id} film`;
+  async remove(id: number): Promise<void> {
+    const film = await this.filmRepository.findOne({ where: { id } });
+    
+    if (!film) 
+      throw new NotFoundException(`Film ID ${id} not found`);
+    
+    this.filmRepository.remove(film);
   }
-  
+
+
   private async preloadGenreByName(name: string): Promise<Genre> {
     const genre = await this.genreRepository.findOne({ where: { name } });
     
@@ -70,4 +81,5 @@ export class FilmService {
     
     return this.genreRepository.create({ name });
   }
+
 }
