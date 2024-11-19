@@ -3,7 +3,7 @@ import { FilmService } from './film.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 
-@Controller('film')
+@Controller('films')
 export class FilmController {
   constructor(private readonly filmService: FilmService) {}
 

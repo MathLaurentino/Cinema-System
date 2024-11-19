@@ -22,7 +22,7 @@ export class Film {
   @Column({ type: 'varchar', length: 50 })
   language: string;
 
-  @ManyToMany(() => Genre, (genre) => genre.films)
+  @ManyToMany(() => Genre, (genre) => genre.films, { cascade: true })
   @JoinTable()
   genres: Genre[];
 }

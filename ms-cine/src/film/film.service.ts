@@ -10,17 +10,26 @@ import { Genre } from './entities/genre.entity';
 export class FilmService {
 
   @InjectRepository(Film)
-  private readonly courseRepository: Repository<Film>;
+  private readonly filmRepository: Repository<Film>;
 
   @InjectRepository(Genre)
-  private readonly tagRepository: Repository<Genre>;
+  private readonly genreRepository: Repository<Genre>;
 
-  create(createFilmDto: CreateFilmDto) {
-    return 'This action adds a new film';
+  async create(createFilmDto: CreateFilmDto) {
+    const genres = await Promise.all(
+      createFilmDto.genres.map((name) => this.preloadGenreByName(name)),
+    );
+
+    const film = await this.filmRepository.create({
+      ...createFilmDto,
+      genres
+    })
+
+    return this.filmRepository.save(film);
   }
 
-  findAll() {
-    return `This action returns all film`;
+  async findAll(): Promise<Film[]> {
+    return await this.filmRepository.find({ relations: ['genres'] })
   }
 
   findOne(id: number) {
@@ -33,5 +42,15 @@ export class FilmService {
 
   remove(id: number) {
     return `This action removes a #${id} film`;
+  }
+
+  private async preloadGenreByName(name: string): Promise<Genre> {
+    const genre = await this.genreRepository.findOne({ where: { name } });
+
+    if (genre) {
+      return genre;
+    }
+
+    return this.genreRepository.create({ name });
   }
 }
