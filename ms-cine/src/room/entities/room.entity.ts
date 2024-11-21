@@ -8,10 +8,10 @@ export class Room {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({enum: RoomType, name: 'type'})
-  type: RoomType
+  @Column({type: 'varchar', nullable: false})
+  type: RoomType;
 
-  @Column()
+  @Column({unique: true, nullable: false})
   number: number
 
   @OneToMany(() => Chair, (chair) => chair.room)
