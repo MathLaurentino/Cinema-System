@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ClassSerializerInterceptor, ConflictException, Injectable, NotFoundException, UseInterceptors } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -75,6 +75,10 @@ export class RoomService {
     
     if (!room) 
       throw new NotFoundException(`Room with id ${roomId} not found`)
+
+    if (room.chairs) {
+      throw new ConflictException(`Room with id ${roomId} already has a layout`)
+    }
     
     const duplicateChair = this.duplicateChairs(createLayoutDto.chairs);
     if (duplicateChair)
@@ -90,21 +94,42 @@ export class RoomService {
   }
 
 
+  async updateRoomLayout(roomId: number, updateLayoutDto: CreateLayoutDto): Promise<Room> {
+    const room = await this.roomRepository.findOne({ where: { id: roomId }, relations: ['chairs'] });
+  
+    if (!room) 
+      throw new NotFoundException(`Room with id ${roomId} not found`);
+  
+    const duplicateChair = this.duplicateChairs(updateLayoutDto.chairs);
+    if (duplicateChair)
+      throw new BadRequestException(`Duplicate chair found`);
+  
+    await this.chairRepository.delete({ room: { id: roomId } });
+  
+    const newChairs = updateLayoutDto.chairs.map((chair) =>
+      this.chairRepository.create({ ...chair, room })
+    );
+  
+    room.chairs = newChairs;
+    return this.roomRepository.save(room);
+  }
+
+
   private duplicateChairs(chairs: CreateChairDto[]): boolean {
     const seen = new Set<string>();
-  
+    
     for (const chair of chairs) {
       const keyRowNumber = `${chair.row}-${chair.number}`;
       const keyPosition = `${chair.positionX}-${chair.positionY}`;
-  
+      
       if (seen.has(keyRowNumber) || seen.has(keyPosition)) {
         return true;
       }
-  
+      
       seen.add(keyRowNumber);
       seen.add(keyPosition);
     }
-  
+    
     return false;
   }
 }

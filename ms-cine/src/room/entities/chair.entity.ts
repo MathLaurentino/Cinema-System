@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ChairType } from "./enum/chairType.enum";
 import { Room } from "./room.entity";
+import { Exclude } from "class-transformer";
 
 @Entity('chair')
 export class Chair {
@@ -18,6 +19,7 @@ export class Chair {
   type: ChairType
 
   @ManyToOne(() => Room, (room) => room.chairs)
+  @Exclude()
   room: Room
 
   @Column()

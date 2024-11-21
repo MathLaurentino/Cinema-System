@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { CreateLayoutDto } from './dto/create-layout.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('rooms')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
@@ -34,7 +35,12 @@ export class RoomController {
   }
 
   @Post(':roomId/layout')
-  criarLayout(@Param('roomId') roomId: number, @Body() createLayoutDto: CreateLayoutDto) {
+  createRoomLayout(@Param('roomId') roomId: number, @Body() createLayoutDto: CreateLayoutDto) {
     return this.roomService.createRoomLayout(roomId, createLayoutDto)
+  }
+
+  @Put(':roomId/layout')
+  updateRoomLayout(@Param('roomId') roomId: number, @Body() updateLayoutDto: CreateLayoutDto) {
+    return this.roomService.updateRoomLayout(roomId, updateLayoutDto)
   }
 }
