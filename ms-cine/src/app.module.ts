@@ -6,13 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Film } from './film/entities/film.entity';
 import { Genre } from './film/entities/genre.entity';
 import { RoomModule } from './room/room.module';
+import { Room } from './room/entities/room.entity';
+import { Chair } from './room/entities/chair.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({ 
       type: 'sqlite',
       database: 'database.db',
-      entities: [Film, Genre],
+      entities: [Film, Genre, Room, Chair],
       synchronize: true,
     }),
     FilmModule,
