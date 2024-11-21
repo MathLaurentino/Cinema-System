@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,13 +24,18 @@ export class RoomService {
   }
 
 
-  findAll() {
-    return `This action returns all room`;
+  async findAll(): Promise<Room[]> {
+    return await this.roomRepository.find({relations: ['chairs']})
   }
 
 
-  findOne(id: number) {
-    return `This action returns a #${id} room`;
+  async findOne(id: number) {
+    const room = await this.roomRepository.findOne({where: { id }, relations: ['chairs']})
+    
+    if (room == null) 
+      throw new NotFoundException(`Room with id ${id} not founded`)
+    
+    return room;
   }
 
 
