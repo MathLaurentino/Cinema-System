@@ -3,7 +3,7 @@ import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Film } from './entities/film.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Genre } from './entities/genre.entity';
 
 @Injectable()
@@ -73,7 +73,7 @@ export class FilmService {
 
 
   private async preloadGenreByName(name: string): Promise<Genre> {
-    const genre = await this.genreRepository.findOne({ where: { name } });
+    const genre = await this.genreRepository.findOne({ where: { name: ILike(name) } });
     
     if (genre) {
       return genre;
