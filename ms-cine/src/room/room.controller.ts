@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { CreateLayoutDto } from './dto/create-layout.dto';
 
 @Controller('rooms')
 export class RoomController {
@@ -30,5 +31,10 @@ export class RoomController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.roomService.remove(+id);
+  }
+
+  @Post(':roomId/layout')
+  criarLayout(@Param('roomId') roomId: number, @Body() createLayoutDto: CreateLayoutDto) {
+    return this.roomService.createRoomLayout(roomId, createLayoutDto)
   }
 }

@@ -14,9 +14,15 @@ export class Chair {
   @Column()
   number: number
 
-  @Column({enum: ChairType, name: 'type'})
+  @Column({type: 'varchar'})
   type: ChairType
 
   @ManyToOne(() => Room, (room) => room.chairs)
   room: Room
+
+  @Column()
+  positionX: number;
+
+  @Column()
+  positionY: number;
 }
