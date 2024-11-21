@@ -29,22 +29,39 @@ export class RoomService {
   }
 
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Room> {
     const room = await this.roomRepository.findOne({where: { id }, relations: ['chairs']})
     
-    if (room == null) 
-      throw new NotFoundException(`Room with id ${id} not founded`)
+    if (!room) 
+      throw new NotFoundException(`Room with id ${id} not found`)
     
     return room;
   }
 
 
-  update(id: number, updateRoomDto: UpdateRoomDto) {
-    return `This action updates a #${id} room`;
+  async update(id: number, updateRoomDto: UpdateRoomDto): Promise<Room> {
+    const room = await this.roomRepository.preload({
+      ... updateRoomDto,
+      id
+    })
+    
+    if (room == null) 
+      throw new NotFoundException(`Room with id ${id} not found`)
+    
+    const existRoom = await this.roomRepository.findOne({where: {number: updateRoomDto.number}})
+    if (updateRoomDto.number && existRoom && existRoom.id != room.id) 
+      throw new ConflictException(`Room number ${updateRoomDto.number} is already in use`)
+    
+    return this.roomRepository.save(room);
   }
 
 
-  remove(id: number) {
-    return `This action removes a #${id} room`;
+  async remove(id: number): Promise<void> {
+    const room = await this.roomRepository.findOne({where: { id }})
+    
+    if (!room) 
+      throw new NotFoundException(`Room with id ${id} not found`)
+
+    this.roomRepository.delete(room);
   }
 }

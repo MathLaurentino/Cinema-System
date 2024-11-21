@@ -14,6 +14,6 @@ export class Room {
   @Column({unique: true, nullable: false})
   number: number
 
-  @OneToMany(() => Chair, (chair) => chair.room)
+  @OneToMany(() => Chair, (chair) => chair.room, {onDelete: 'CASCADE'})
   chairs: Chair[]
 }
