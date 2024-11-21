@@ -5,6 +5,7 @@ import { FilmModule } from './film/film.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Film } from './film/entities/film.entity';
 import { Genre } from './film/entities/genre.entity';
+import { RoomModule } from './room/room.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { Genre } from './film/entities/genre.entity';
       entities: [Film, Genre],
       synchronize: true,
     }),
-    FilmModule
+    FilmModule,
+    RoomModule
   ],
   controllers: [AppController],
   providers: [AppService],
