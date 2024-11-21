@@ -8,6 +8,7 @@ import { Genre } from './film/entities/genre.entity';
 import { RoomModule } from './room/room.module';
 import { Room } from './room/entities/room.entity';
 import { Chair } from './room/entities/chair.entity';
+import { ShowtimeModule } from './showtime/showtime.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { Chair } from './room/entities/chair.entity';
       synchronize: true,
     }),
     FilmModule,
-    RoomModule
+    RoomModule,
+    ShowtimeModule
   ],
   controllers: [AppController],
   providers: [AppService],
