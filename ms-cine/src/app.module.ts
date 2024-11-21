@@ -9,13 +9,14 @@ import { RoomModule } from './room/room.module';
 import { Room } from './room/entities/room.entity';
 import { Chair } from './room/entities/chair.entity';
 import { ShowtimeModule } from './showtime/showtime.module';
+import { Showtime } from './showtime/entities/showtime.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({ 
       type: 'sqlite',
       database: 'database.db',
-      entities: [Film, Genre, Room, Chair],
+      entities: [Film, Genre, Room, Chair, Showtime],
       synchronize: true,
     }),
     FilmModule,
