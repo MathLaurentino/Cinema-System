@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateShowtimeDto } from './dto/create-showtime.dto';
 import { UpdateShowtimeDto } from './dto/update-showtime.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,6 +18,7 @@ export class ShowtimeService {
 
   @Inject()
   private readonly roomService: RoomService
+
 
   async create(dto: CreateShowtimeDto): Promise<Showtime> {
     const [film, room] = await Promise.all([
@@ -57,20 +58,29 @@ export class ShowtimeService {
     return this.showtimeRepository.save(showtime);
   }
 
-  findAll() {
-    return `This action returns all showtime`;
+
+  async findAll(): Promise<Showtime[]> {
+    return await this.showtimeRepository.find({relations: ['room', 'film']});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} showtime`;
+
+  async findOne(id: number): Promise<Showtime> {
+    const showtime = await this.showtimeRepository.findOne({where: { id }, relations: ['room', 'film']})
+    
+    if (!showtime) 
+      throw new NotFoundException(`Showtime with id ${id} not found`)
+    
+    return showtime;
   }
 
-  update(id: number, updateShowtimeDto: UpdateShowtimeDto) {
-    return `This action updates a #${id} showtime`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} showtime`;
+  async remove(id: number): Promise<void> {
+    const showtime = await this.showtimeRepository.findOne({where: { id }})
+    
+    if (!showtime) {
+      throw new NotFoundException(`Showtime with id ${id} not found`)
+    }
+    
+    this.showtimeRepository.remove(showtime);
   }
 
 
@@ -79,7 +89,7 @@ export class ShowtimeService {
     const endTime = new Date(startTime);
     endTime.setHours(endTime.getHours() + hours);
     endTime.setMinutes(endTime.getMinutes() + minutes);
-
+    
     return endTime;
   }
 }
