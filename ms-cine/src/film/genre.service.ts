@@ -1,4 +1,4 @@
-import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Genre } from "./entities/genre.entity";
 import { ILike, Repository } from "typeorm";
@@ -15,7 +15,7 @@ export class GenreService {
     const nameExist = await this.genreRepository.findOne({ where: { name: ILike(genreDto.name) } });
     
     if (nameExist) {
-      throw new HttpException(`Genre '${genreDto.name}' already exist`, HttpStatus.BAD_REQUEST)
+      throw new BadRequestException(`Genre '${genreDto.name}' already exist`)
     }
     
     const genre = await this.genreRepository.create({... genreDto})

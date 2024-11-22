@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FilmService } from './film.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
+import { NotFoundException } from '@nestjs/common';
 
 describe('FilmService Unit Tests', () => {
   
@@ -101,7 +102,7 @@ describe('FilmService Unit Tests', () => {
     // Mocks específicos para este teste
     mockFilmRepository.findOne.mockReturnValueOnce(Promise.resolve(null));
     
-    await expect(service.findOne(id)).rejects.toThrow(`Film ID ${id} not found`);
+    await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
     expect(mockFilmRepository.findOne).toHaveBeenCalled();
   });
 
@@ -128,9 +129,7 @@ describe('FilmService Unit Tests', () => {
   it('should throw an error if film not found during update', async () => {
     mockFilmRepository.preload.mockReturnValueOnce(null);
     
-    await expect(service.update(id, { title: 'Updated Title' } as any)).rejects.toThrow(
-      `Film ID ${id} not found`,
-    );
+    await expect(service.update(id, { title: 'Updated Title' } as any)).rejects.toThrow(NotFoundException);
   });
 
 
@@ -147,6 +146,6 @@ describe('FilmService Unit Tests', () => {
   it('should throw an error if film not found during removal', async () => {
     mockFilmRepository.findOne.mockReturnValueOnce(Promise.resolve(null));
     
-    await expect(service.remove(id)).rejects.toThrow(`Film ID ${id} not found`);
+    await expect(service.remove(id)).rejects.toThrow(NotFoundException);
   });
 });
