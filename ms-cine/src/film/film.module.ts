@@ -11,5 +11,6 @@ import { GenreService } from './genre.service';
   imports: [TypeOrmModule.forFeature([Film, Genre])],
   controllers: [FilmController, GenreController],
   providers: [FilmService, GenreService],
+  exports: [FilmService]
 })
 export class FilmModule {}

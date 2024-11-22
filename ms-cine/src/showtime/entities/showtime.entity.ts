@@ -1,6 +1,6 @@
 import { Film } from "src/film/entities/film.entity";
 import { Room } from "src/room/entities/room.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('showtime')
 export class Showtime {
@@ -10,9 +10,12 @@ export class Showtime {
 
   @Column()
   subtitles: boolean
+  
+  @Column({nullable: true})
+  subtitlesLenguage: string
 
   @Column()
-  starTime: Date
+  startTime: Date
 
   @Column()
   endTime: Date
@@ -21,5 +24,5 @@ export class Showtime {
   film: Film
 
   @ManyToOne(() => Room, (room) => room.showTimes)
-  Room: Room
+  room: Room
 }
