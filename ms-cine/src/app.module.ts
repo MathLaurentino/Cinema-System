@@ -10,6 +10,8 @@ import { Room } from './room/entities/room.entity';
 import { Chair } from './room/entities/chair.entity';
 import { ShowtimeModule } from './showtime/showtime.module';
 import { Showtime } from './showtime/entities/showtime.entity';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -19,9 +21,13 @@ import { Showtime } from './showtime/entities/showtime.entity';
       entities: [Film, Genre, Room, Chair, Showtime],
       synchronize: true,
     }),
+    ConfigModule.forRoot({
+      isGlobal: true
+    }),
     FilmModule,
     RoomModule,
-    ShowtimeModule
+    ShowtimeModule,
+    PassportModule
   ],
   controllers: [AppController],
   providers: [AppService],
