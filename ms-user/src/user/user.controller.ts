@@ -4,6 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { CurrentUser } from './jwt/current-user.decorator';
 import { CurrentUserDto } from './dto/current-user.dto';
+import { Roles } from './jwt/roles.decorator';
 
 @Controller('users')
 export class UserController {
@@ -11,8 +12,8 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @Roles('admin_user')
   findAll(@CurrentUser() user: CurrentUserDto) {
-    console.log(user)
     return this.userService.findAll();
   }
 

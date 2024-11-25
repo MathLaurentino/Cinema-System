@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { randomBytes, scrypt as _scrypt } from 'crypto';
 import { promisify } from 'util';
 import { UserRole } from './entities/enum/userRole.enum';
-import { SignUpDto } from './dto/sign-up.dto copy';
+import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -54,7 +54,8 @@ export class AuthService {
       return new UnauthorizedException('Invalid credentials');
     }
     
-    const payload = { username: user.email, sub: user.id }
+    const payload = { username: user.email, sub: user.id, roles: [user.role] }
+    console.log(payload)
     return { accessToken: this.jwtService.sign(payload) }
   }
 }
