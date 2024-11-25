@@ -1,8 +1,11 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, UseGuards } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Genre } from "./entities/genre.entity";
 import { ILike, Repository } from "typeorm";
 import { GenreDto } from "./dto/genre.dto";
+import { Roles } from "src/auth/roles.decorator";
+import { UserRole } from "src/auth/userRole.enum";
+import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 
 @Injectable()
 export class GenreService {
@@ -11,6 +14,8 @@ export class GenreService {
   private readonly genreRepository: Repository<Genre>;
 
 
+  @Roles(UserRole.ADMIN_USER)
+  @UseGuards(JwtAuthGuard)
   async create(genreDto: GenreDto): Promise<Genre> {
     const nameExist = await this.genreRepository.findOne({ where: { name: ILike(genreDto.name) } });
     
@@ -24,6 +29,8 @@ export class GenreService {
   }
 
 
+  @Roles(UserRole.ADMIN_USER)
+  @UseGuards(JwtAuthGuard)
   async update(id: number, genreDto: GenreDto): Promise<Genre> {
     const genre = await this.genreRepository.preload({ ... genreDto, id })
     
@@ -34,6 +41,8 @@ export class GenreService {
   }
 
 
+  @Roles(UserRole.ADMIN_USER)
+  @UseGuards(JwtAuthGuard)
   async remove(id: number): Promise<Genre> {
     const genre = await this.genreRepository.findOne({
       where: { id },
@@ -48,7 +57,7 @@ export class GenreService {
         `Cannot delete genre ID ${id} because it is associated with one or more films.`,
       );
     }
-
+    
     return await this.genreRepository.remove(genre);
   }
 
