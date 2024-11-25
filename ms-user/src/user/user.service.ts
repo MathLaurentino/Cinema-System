@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { scrypt as _scrypt } from 'crypto';
 import { UserRole } from './entities/enum/userRole.enum';
+import { UpdateUserDto } from './dto/update-user.dtp';
 
 @Injectable()
 export class UserService {
@@ -17,11 +18,12 @@ export class UserService {
     })
   }
 
+
   async findOne(id: number, currentUserId: number) {
     if (id != currentUserId) {
       const currentUser = await this.userRepository.findOne({where: {id: currentUserId}})
       if (currentUser.role != UserRole.ADMIN_USER) {
-        throw new UnauthorizedException('User does not have permission')
+        throw new ForbiddenException('User does not have permission')
       }
     }
     
@@ -31,12 +33,20 @@ export class UserService {
     })
   }
 
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto, currentUserId: number) {
+    if (id != currentUserId) {
+      throw new ForbiddenException('User does not have permission')
+    }
+    
+    const userPreload = await this.userRepository.preload({
+      ... updateUserDto,
+      id
+    })
+    const user = await this.userRepository.save(userPreload);
+    
+    const {password, ...result} = user
+    return result
   }
 
 }
