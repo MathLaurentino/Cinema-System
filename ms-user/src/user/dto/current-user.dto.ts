@@ -1,5 +1,4 @@
 export class CurrentUserDto{
-  userId: string
+  userId: number
   username: string
-  roles: string[]
 }

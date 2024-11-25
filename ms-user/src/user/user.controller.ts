@@ -13,13 +13,17 @@ export class UserController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @Roles(UserRole.ADMIN_USER)
-  findAll(@CurrentUser() user: CurrentUserDto) {
+  findAll(@CurrentUser() currentUser: CurrentUserDto) {
+    console.log(currentUser)
+
     return this.userService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  @Roles(UserRole.REGULAR_USER, UserRole.ADMIN_USER)
+  findOne(@Param('id') id: number, @CurrentUser() currentUser: CurrentUserDto) {
+    return this.userService.findOne(id, currentUser.userId);
   }
 
   // @Patch(':id')
