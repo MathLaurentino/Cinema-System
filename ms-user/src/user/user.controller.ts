@@ -4,6 +4,7 @@ import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { CurrentUser } from './jwt/current-user.decorator';
 import { CurrentUserDto } from './dto/current-user.dto';
 import { Roles } from './jwt/roles.decorator';
+import { UserRole } from './entities/enum/userRole.enum';
 
 @Controller('users')
 export class UserController {
@@ -11,7 +12,7 @@ export class UserController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @Roles('admin_user')
+  @Roles(UserRole.ADMIN_USER)
   findAll(@CurrentUser() user: CurrentUserDto) {
     return this.userService.findAll();
   }

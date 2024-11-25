@@ -3,9 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { scrypt as _scrypt } from 'crypto';
-import { promisify } from 'util';
-
-const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class UserService {
@@ -14,8 +11,9 @@ export class UserService {
   private readonly userRepository: Repository<User>;
 
   async findAll(): Promise<User[]> {
-    const users = await this.userRepository.find();
-    return users;
+    return this.userRepository.find({
+      select: ['id', 'name', 'cpf', 'email', 'role'],
+    })
   }
 
   findOne(id: number) {
