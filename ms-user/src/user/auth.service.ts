@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { promisify } from 'util';
 import { UserRole } from './entities/enum/userRole.enum';
 import { SignUpDto } from './dto/sign-up.dto copy';
 import { SignInDto } from './dto/sign-in.dto';
+import { JwtService } from '@nestjs/jwt';
 
 const scrypt = promisify(_scrypt);
 
@@ -14,7 +15,10 @@ const scrypt = promisify(_scrypt);
 export class AuthService {
 
   @InjectRepository(User)
-  private readonly userRepository: Repository<User>;
+  private readonly userRepository: Repository<User>
+
+  @Inject()
+  private readonly jwtService: JwtService
 
   async signUp(signUpDto: SignUpDto): Promise<Partial<User>> {
     const user = await this.userRepository.findOne({ where: {email: signUpDto.email }})
@@ -42,16 +46,15 @@ export class AuthService {
     if (!user) {
       return new UnauthorizedException('Invalid credentials');
     }
-
+    
     const [salt, storedHash] = user.password.split('.');
     const hash = (await scrypt(signInDto.password, salt, 32)) as Buffer;
-
+    
     if (storedHash != hash.toString('hex')) {
       return new UnauthorizedException('Invalid credentials');
     }
-
-    console.log('Signed in', user);
-    const { password, ...result } = user;
-    return result;
+    
+    const payload = { username: user.email, sub: user.id }
+    return { accessToken: this.jwtService.sign(payload) }
   }
 }
