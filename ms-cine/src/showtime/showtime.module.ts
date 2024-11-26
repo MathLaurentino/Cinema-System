@@ -5,12 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Showtime } from './entities/showtime.entity';
 import { RoomModule } from 'src/room/room.module';
 import { FilmModule } from 'src/film/film.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Showtime]), 
     RoomModule, 
-    FilmModule
+    FilmModule,
+    AuthModule
   ],
   controllers: [ShowtimeController],
   providers: [ShowtimeService],
