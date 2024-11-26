@@ -75,10 +75,9 @@ export class RoomService {
     
     if (!room) 
       throw new NotFoundException(`Room with id ${roomId} not found`)
-
-    if (room.chairs) {
+    
+    if (room.chairs.length > 0) 
       throw new ConflictException(`Room with id ${roomId} already has a layout`)
-    }
     
     const duplicateChair = this.duplicateChairs(createLayoutDto.chairs);
     if (duplicateChair)
@@ -96,20 +95,20 @@ export class RoomService {
 
   async updateRoomLayout(roomId: number, updateLayoutDto: CreateLayoutDto): Promise<Room> {
     const room = await this.roomRepository.findOne({ where: { id: roomId }, relations: ['chairs'] });
-  
+    
     if (!room) 
       throw new NotFoundException(`Room with id ${roomId} not found`);
-  
+    
     const duplicateChair = this.duplicateChairs(updateLayoutDto.chairs);
     if (duplicateChair)
       throw new BadRequestException(`Duplicate chair found`);
-  
+    
     await this.chairRepository.delete({ room: { id: roomId } });
-  
+    
     const newChairs = updateLayoutDto.chairs.map((chair) =>
       this.chairRepository.create({ ...chair, room })
     );
-  
+    
     room.chairs = newChairs;
     return this.roomRepository.save(room);
   }
